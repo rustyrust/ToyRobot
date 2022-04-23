@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 
 namespace ToyRobot
 {
     public class InputHandler
     {
         private bool PlaceCommandUsed { get; set; }
+
+        private Position Position { get; set; }
 
         public void Init()
         {
@@ -21,10 +24,33 @@ namespace ToyRobot
 
         public bool CheckInput(string input)
         {
+            GetCoordinates(input);
+            GetFace(input);
             return CheckCommand(input);
         }
 
-        private void CheckCoordinate(string input)
+        private void GetCoordinates(string input)
+        {
+            for (int i = 0; i < input.Length; i++)
+            {
+                if (i == 6)
+                {
+                    Position.Coordinate.X = int.Parse(input[i].ToString());
+                }
+                else if (i == 8)
+                {
+                    Position.Coordinate.Y = int.Parse(input[i].ToString());
+                }
+            }
+        }
+
+        private void GetFace(string input)
+        {
+            var rgx = new Regex("[^,]*$");
+            Position.Direction = rgx.Match(input).Value;
+        }
+
+        private void CheckPlaceCoordinate(string input)
         {
             //if ()
             //{
@@ -43,12 +69,12 @@ namespace ToyRobot
                 PlaceCommandUsed = true;
                 return true;
             }
-            else if (!Enum.IsDefined(typeof(Commands), input))
+            else if (!Enum.IsDefined(typeof(Command), input))
             {
                 Console.WriteLine("You have used an invalid command, please try again");
                 return false;
             }
-            else if (Enum.IsDefined(typeof(Commands), input))
+            else if (Enum.IsDefined(typeof(Command), input))
             {
                 return CheckPlaceHasBeenUsed();
             }
@@ -66,6 +92,11 @@ namespace ToyRobot
             return true;
         }
 
+        private bool CheckFace(string input)
+        {
+            var rgx = new Regex("[^,]*$");
+            return rgx.Match(input).Success;
+        }
 
     }
 }

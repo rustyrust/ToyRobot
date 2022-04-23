@@ -34,19 +34,19 @@ namespace ToyRobot
             }
             else
             {
-                var command = (Commands)Enum.Parse(typeof(Commands), input);
+                var command = (Command)Enum.Parse(typeof(Command), input);
                 switch (command)
                 {
-                    case Commands.RIGHT:
+                    case Command.RIGHT:
                         _robot.Right();
                         break;
-                    case Commands.LEFT:
+                    case Command.LEFT:
                         _robot.Left();
                         break;
-                    case Commands.MOVE:
+                    case Command.MOVE:
                         _robot.Move();
                         break;
-                    case Commands.REPORT:
+                    case Command.REPORT:
                         Report();
                         break;
                 }
@@ -75,7 +75,7 @@ namespace ToyRobot
         //NOTE i feel like this should be in InputHander Class
         private string GetFace(string input)
         {
-            Regex rgx = new Regex("[^,]*$");
+            var rgx = new Regex("[^,]*$");
             return rgx.Match(input).Value;
         }
     }

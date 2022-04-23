@@ -8,7 +8,7 @@
             Direction = direction;
         }
 
-        public Coordinate Coordinate { get; }
-        public string Direction { get; }
+        public Coordinate Coordinate { get; set; }
+        public string Direction { get; set; }
     }
 }

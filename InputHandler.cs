@@ -40,22 +40,30 @@ namespace ToyRobot
         {
             if (input.Contains("PLACE"))
             {
+                PlaceCommandUsed = true;
                 return true;
             }
-            else if(!Enum.IsDefined(typeof(Commands), input))
+            else if (!Enum.IsDefined(typeof(Commands), input))
             {
                 Console.WriteLine("You have used an invalid command, please try again");
                 return false;
             }
-            return true;
+            else if (Enum.IsDefined(typeof(Commands), input))
+            {
+                return CheckPlaceHasBeenUsed();
+            }
+            return false;
+
         }
 
-        private void CheckPlaceHasBeenUsed(string input)
+        private bool CheckPlaceHasBeenUsed()
         {
-            //if (input.Contains(Commands.PLACE))
-            //{
-
-            //}
+            if (!PlaceCommandUsed)
+            {
+                Console.WriteLine("You must use a PLACE command before using any other command");
+                return false;
+            }
+            return true;
         }
 
 

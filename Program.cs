@@ -22,8 +22,11 @@ namespace ToyRobot
                 else
                 {
                     //check the input that being passed then if all good you may continue to run the code
-                    //inputHandler.CheckInput(input);
-                    table.HandleCommand(input);
+                    if (inputHandler.CheckInput(input))
+                    {
+                        table.HandleCommand(input);
+                    }
+
                 }
             }
 

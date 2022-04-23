@@ -24,9 +24,9 @@ namespace ToyRobot
         }
 
         //NOTE i feel like this should be in InputHander Class
-        public void HandleCommand(Commands input)
+        public void HandleCommand(string input)
         {
-            if (input == Commands.PLACE)
+            if (input.Contains("PLACE"))
             {
                 var face = GetFace(input.ToString());
                 var coordinate = GetCoordinates(input.ToString());
@@ -34,18 +34,19 @@ namespace ToyRobot
             }
             else
             {
-                switch (input)
+                var command = (Commands)Enum.Parse(typeof(Commands), input);
+                switch (command)
                 {
                     case Commands.RIGHT:
                         _robot.Right();
                         break;
-                    case "left":
+                    case Commands.LEFT:
                         _robot.Left();
                         break;
-                    case "move":
+                    case Commands.MOVE:
                         _robot.Move();
                         break;
-                    case "report":
+                    case Commands.REPORT:
                         Report();
                         break;
                 }

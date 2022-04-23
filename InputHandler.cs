@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace ToyRobot
 {
@@ -23,8 +21,7 @@ namespace ToyRobot
 
         public bool CheckInput(string input)
         {
-            CheckCommand(input);
-            return true;
+            return CheckCommand(input);
         }
 
         private void CheckCoordinate(string input)
@@ -39,12 +36,18 @@ namespace ToyRobot
             //}
         }
 
-        private void CheckCommand(string input)
+        private bool CheckCommand(string input)
         {
-            if(!Enum.IsDefined(typeof(Commands), input))
+            if (input.Contains("PLACE"))
+            {
+                return true;
+            }
+            else if(!Enum.IsDefined(typeof(Commands), input))
             {
                 Console.WriteLine("You have used an invalid command, please try again");
+                return false;
             }
+            return true;
         }
 
         private void CheckPlaceHasBeenUsed(string input)

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using ToyRobot.Models;
 
-namespace ToyRobot
+namespace ToyRobot.Domain
 {
     public class InputHandler
     {
@@ -21,13 +22,14 @@ namespace ToyRobot
         {
             Console.WriteLine("Welcome to this ToyRobot Game");
             Console.WriteLine("Commands are;");
-            Console.WriteLine("Place: This will place the robot on the table");
-            Console.WriteLine("Move: This will move the robot by 1 unit");
-            Console.WriteLine("Left: This will move the robots face left");
-            Console.WriteLine("Right: This will move the robots face right");
-            Console.WriteLine("Report: This will print out the current location of the robot");
-            Console.WriteLine("End: This will end the app");
-            Console.WriteLine("NOTE - you must start off with a place command");
+            Console.WriteLine("PLACE: This will place the robot on the table");
+            Console.WriteLine("MOVE: This will move the robot by 1 unit");
+            Console.WriteLine("LEFT: This will move the robots face left");
+            Console.WriteLine("RIGHT: This will move the robots face right");
+            Console.WriteLine("REPORT: This will print out the current location of the robot");
+            Console.WriteLine("END: This will end the app");
+            Console.WriteLine("NOTE - you must start off with a PLACE command");
+            Console.WriteLine("NOTE - The table is a 5 by 5 Grid");
         }
 
         public bool CheckInput(string input)
@@ -39,6 +41,31 @@ namespace ToyRobot
             return false;
         }
 
+        private bool CheckInputCommand(string input)
+        {
+            if (input.Contains("PLACE"))
+            {
+                if (CheckPlaceCommand(input))
+                {
+                    GetCoordinates(input);
+                    GetFace(input);
+                    return true;
+                }
+                return false;
+            }
+            else if (!Enum.IsDefined(typeof(Command), input))
+            {
+                Console.WriteLine("You have used an invalid command, please try again");
+                return false;
+            }
+            else if (Enum.IsDefined(typeof(Command), input))
+            {
+                return CheckPlaceHasBeenUsed();
+            }
+            return false;
+
+        }
+
         private void GetCoordinates(string input)
         {
             var newCoordinate = new Coordinate();
@@ -47,11 +74,13 @@ namespace ToyRobot
             {
                 if (i == 6)
                 {
-                    newCoordinate.X = int.Parse(input[i].ToString());
+                    var rgx = new Regex("(?<= )(.*?)(?=,)");
+                    newCoordinate.X = int.Parse(rgx.Match(input).Value);
                 }
                 else if (i == 8)
                 {
-                    newCoordinate.Y = int.Parse(input[i].ToString());
+                    var rgx = new Regex("(?<=,)(.*?)(?=,)");
+                    newCoordinate.Y = int.Parse(rgx.Match(input).Value);
                 }
             }
 
@@ -76,7 +105,7 @@ namespace ToyRobot
         private bool CheckPlaceCoordinate()
         {
             if ((Coordinate.X > _table.MaxCoordinateSize || Coordinate.X < 0) ||
-                (Coordinate.X > _table.MaxCoordinateSize || Coordinate.X < 0))
+                (Coordinate.Y > _table.MaxCoordinateSize || Coordinate.Y < 0))
             {
                 Console.WriteLine("You have provided coordinates that are outside the tables grid");
                 return false;
@@ -94,26 +123,16 @@ namespace ToyRobot
             return true;
         }
 
-        private bool CheckInputCommand(string input)
+        private bool CheckPlaceCommand(string input)
         {
-            if (input.Contains("PLACE"))
+            var rgx = new Regex("^(PLACE \\d+,\\d+,[a-zA-Z]+)$");
+
+            if (rgx.Match(input).Success)
             {
-                //METHOD to check the Coordinates
-                GetCoordinates(input);
-                GetFace(input);
                 return true;
             }
-            else if (!Enum.IsDefined(typeof(Command), input))
-            {
-                Console.WriteLine("You have used an invalid command, please try again");
-                return false;
-            }
-            else if (Enum.IsDefined(typeof(Command), input))
-            {
-                return CheckPlaceHasBeenUsed();
-            }
+            Console.WriteLine("The PLACE command entered is not valid");
             return false;
-
         }
 
         private bool CheckPlaceHasBeenUsed()
@@ -130,7 +149,7 @@ namespace ToyRobot
         {
             if (input.Contains("PLACE"))
             {
-                var direction = Direction;
+                var direction = (Direction)Enum.Parse(typeof(Direction), Direction);
                 var coordinate = Coordinate;
                 _robot.Place(coordinate, direction);
             }

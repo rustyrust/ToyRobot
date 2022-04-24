@@ -1,4 +1,5 @@
 ﻿using System;
+using ToyRobot.Domain;
 
 namespace ToyRobot
 {
@@ -15,13 +16,12 @@ namespace ToyRobot
             while (!endApp)
             {
                 var input = Console.ReadLine();
-                if (input.Equals("end", StringComparison.OrdinalIgnoreCase))
+                if (input.Equals("END", StringComparison.OrdinalIgnoreCase))
                 {
                     endApp = true;
                 }
                 else
                 {
-                    //check the input that being passed then if all good you may continue to run the code
                     if (inputHandler.CheckInput(input))
                     {
                         inputHandler.HandleCommand(input);
@@ -29,9 +29,6 @@ namespace ToyRobot
 
                 }
             }
-
-
-            //exit command to close the console application
         }
     }
 }

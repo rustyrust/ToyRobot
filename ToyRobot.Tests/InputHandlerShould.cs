@@ -27,7 +27,7 @@ namespace ToyRobot.Tests
         }
 
         [Test]
-        public void CheckInput_PlaceCommandBadDirection_CheckFailes()
+        public void CheckInput_PlaceCommandBadDirection_CheckFails()
         {
             var result = _inputHandler.CheckInput("PLACE 0,0,foo");
 
@@ -115,6 +115,5 @@ namespace ToyRobot.Tests
 
             Assert.AreEqual(result, true);
         }
-
     }
 }

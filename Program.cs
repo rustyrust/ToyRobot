@@ -8,7 +8,7 @@ namespace ToyRobot
         {
             var robot = new Robot();
             var table = new Table(robot);
-            var inputHandler = new InputHandler();
+            var inputHandler = new InputHandler(robot, table);
             inputHandler.Init();
 
             var endApp = false;
@@ -24,7 +24,7 @@ namespace ToyRobot
                     //check the input that being passed then if all good you may continue to run the code
                     if (inputHandler.CheckInput(input))
                     {
-                        table.HandleCommand(input);
+                        inputHandler.HandleCommand(input);
                     }
 
                 }

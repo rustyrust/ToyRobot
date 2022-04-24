@@ -5,9 +5,17 @@ namespace ToyRobot
 {
     public class InputHandler
     {
-        private bool PlaceCommandUsed { get; set; }
+        private readonly Robot _robot;
+        private readonly Table _table;
 
-        private Position Position { get; set; }
+        public InputHandler(Robot robot, Table table)
+        {
+            _robot = robot;
+            _table = table;
+        }
+
+        private Coordinate Coordinate { get; set; }
+        private string Direction { get; set; }
 
         public void Init()
         {
@@ -24,49 +32,75 @@ namespace ToyRobot
 
         public bool CheckInput(string input)
         {
-            GetCoordinates(input);
-            GetFace(input);
-            return CheckCommand(input);
+            if (CheckInputCommand(input))
+            {
+                return CheckPosition();
+            }
+            return false;
         }
 
         private void GetCoordinates(string input)
         {
+            var newCoordinate = new Coordinate();
+
             for (int i = 0; i < input.Length; i++)
             {
                 if (i == 6)
                 {
-                    Position.Coordinate.X = int.Parse(input[i].ToString());
+                    newCoordinate.X = int.Parse(input[i].ToString());
                 }
                 else if (i == 8)
                 {
-                    Position.Coordinate.Y = int.Parse(input[i].ToString());
+                    newCoordinate.Y = int.Parse(input[i].ToString());
                 }
             }
+
+            Coordinate = newCoordinate;
         }
 
         private void GetFace(string input)
         {
             var rgx = new Regex("[^,]*$");
-            Position.Direction = rgx.Match(input).Value;
+            Direction = rgx.Match(input).Value;
         }
 
-        private void CheckPlaceCoordinate(string input)
+        private bool CheckPosition()
         {
-            //if ()
-            //{
-            //    Console.WriteLine("You have provided coordinates that are outside the tables grid");
-            //}
-            //else
-            //{
-            //    Console.WriteLine("The coordinates provided are inVaild");
-            //}
+            if (CheckDirection() && CheckPlaceCoordinate())
+            {
+                return true;
+            }
+            return false;
         }
 
-        private bool CheckCommand(string input)
+        private bool CheckPlaceCoordinate()
+        {
+            if ((Coordinate.X > _table.MaxCoordinateSize || Coordinate.X < 0) ||
+                (Coordinate.X > _table.MaxCoordinateSize || Coordinate.X < 0))
+            {
+                Console.WriteLine("You have provided coordinates that are outside the tables grid");
+                return false;
+            }
+            return true;
+        }
+
+        private bool CheckDirection()
+        {
+            if (!Enum.IsDefined(typeof(Direction), Direction))
+            {
+                Console.WriteLine($"{Direction} is not a vaild input direction");
+                return false;
+            }
+            return true;
+        }
+
+        private bool CheckInputCommand(string input)
         {
             if (input.Contains("PLACE"))
             {
-                PlaceCommandUsed = true;
+                //METHOD to check the Coordinates
+                GetCoordinates(input);
+                GetFace(input);
                 return true;
             }
             else if (!Enum.IsDefined(typeof(Command), input))
@@ -84,7 +118,7 @@ namespace ToyRobot
 
         private bool CheckPlaceHasBeenUsed()
         {
-            if (!PlaceCommandUsed)
+            if (Coordinate is null)
             {
                 Console.WriteLine("You must use a PLACE command before using any other command");
                 return false;
@@ -92,10 +126,33 @@ namespace ToyRobot
             return true;
         }
 
-        private bool CheckFace(string input)
+        public void HandleCommand(string input)
         {
-            var rgx = new Regex("[^,]*$");
-            return rgx.Match(input).Success;
+            if (input.Contains("PLACE"))
+            {
+                var direction = Direction;
+                var coordinate = Coordinate;
+                _robot.Place(coordinate, direction);
+            }
+            else
+            {
+                var command = (Command)Enum.Parse(typeof(Command), input);
+                switch (command)
+                {
+                    case Command.RIGHT:
+                        _robot.Right();
+                        break;
+                    case Command.LEFT:
+                        _robot.Left();
+                        break;
+                    case Command.MOVE:
+                        _robot.Move();
+                        break;
+                    case Command.REPORT:
+                        _table.Report();
+                        break;
+                }
+            }
         }
 
     }
